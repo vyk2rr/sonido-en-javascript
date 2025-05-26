@@ -47,16 +47,21 @@
 
   <hr>
 
-<div class="key" onclick="playChord([261.63, 329.63, 392.00], 'Acorde DO (Raíz) – Tres caminos se funden en uno.')">C Mayor (C–E–G)</div>
-<div class="key" onclick="playChord([329.63, 392.00, 523.25], 'Primera inversión – El viaje comienza desde el corazón.')">C – 1ra inversión (E–G–C)</div>
-<div class="key" onclick="playChord([392.00, 523.25, 659.26], 'Segunda inversión – La luz desciende, firme y clara.')">C – 2da inversión (G–C–E)</div>
-<div class="key" onclick="playChord([261.63, 415.30, 349.23], 'Armonía negativa – Lo que fuiste, vuelve desde otro cielo.')">C en armonía negativa (C–Ab–F)</div>
-<div class="key" onclick="playChord([415.30, 349.23, 523.25], '1ra inversión negativa – El corazón se abre desde la sombra.')">C negativa – 1ra inversión (Ab–F–C)</div>
-<div class="key" onclick="playChord([349.23, 523.25, 622.25], '2da inversión negativa – La raíz canta desde el revés del alma.')">C negativa – 2da inversión (F–C–Ab)</div>
+<div class="key" onclick="playChord(['C4', 'E4', 'G4'], 'Acorde DO (Raíz) – Tres caminos se funden en uno.')">C Mayor (C–E–G)</div>
+<div class="key" onclick="playChord(['E4', 'G4', 'C5'], 'Primera inversión – El viaje comienza desde el corazón.')">C – 1ra inversión (E–G–C)</div>
+<div class="key" onclick="playChord(['G4', 'C5', 'E5'], 'Segunda inversión – La luz desciende, firme y clara.')">C – 2da inversión (G–C–E)</div>
+<div class="key" onclick="playChord(['C4', 'Ab4', 'F4'], 'Armonía negativa – Lo que fuiste, vuelve desde otro cielo.')">C en armonía negativa (C–Ab–F)</div>
+<div class="key" onclick="playChord(['Ab4','F4','C5'], '1ra inversión negativa – El corazón se abre desde la sombra.')">C negativa – 1ra inversión (Ab–F–C)</div>
+<div class="key" onclick="playChord(['F4', 'C5', 'Ab5'], '2da inversión negativa – La raíz canta desde el revés del alma.')">C negativa – 2da inversión (F–C–Ab)</div>
 
 
+<hr style="margin: 2em 0; border-color: #555;" />
+
+<div class="key" onclick="playDScaleNotes()">play D Scale (Notas)</div>
+<div class="key" onclick="playDScaleChords()">play D Scale (Acordes)</div>
 
   <div class="poetry" id="poetryBox">—</div>
+  
 
   <script>
     const scale = [
@@ -96,19 +101,84 @@
       document.getElementById('poetryBox').textContent = message;
     }
 
-    function playChord(frequencies, message) {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      frequencies.forEach(freq => {
-        const oscillator = audioCtx.createOscillator();
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        oscillator.connect(audioCtx.destination);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 1);
-      });
+function playChord(notes, message) {
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const now = audioCtx.currentTime;
 
-      document.getElementById('poetryBox').textContent = message;
-    }
+  notes.forEach(note => {
+    const freq = typeof note === 'string' ? noteToFrequency(note) : note;
+
+    const oscillator = audioCtx.createOscillator();
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(freq, now);
+    oscillator.connect(audioCtx.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 1);
+  });
+
+  document.getElementById('poetryBox').textContent = message || '—';
+}
+
+function playChordSequence(sequence) {
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  let currentTime = audioCtx.currentTime;
+
+  sequence.forEach(({ notes, duration }) => {
+    notes.forEach(note => {
+      const freq = typeof note === 'string' ? noteToFrequency(note) : note;
+      const oscillator = audioCtx.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(freq, currentTime);
+      oscillator.connect(audioCtx.destination);
+      oscillator.start(currentTime);
+      oscillator.stop(currentTime + duration);
+    });
+    currentTime += duration;
+  });
+}
+
+function playDScaleNotes() {
+  const notes = ['D4', 'E4', 'F#4', 'G4', 'A4', 'B4', 'C#5', 'D5'];
+  const sequence = notes.map(note => ({ notes: [note], duration: 0.5 }));
+  
+  playChordSequence(sequence);
+  document.getElementById('poetryBox').textContent = 'Escala mayor de D en notas D Em F#m G A Bm C#dim D';
+}
+function playDScaleChords() {
+  const sequence = [
+    { notes: ['D4', 'F#4', 'A4'], duration: 0.5 },   // D mayor
+    { notes: ['E4', 'G4', 'B4'], duration: 0.5 },    // E menor
+    { notes: ['F#4', 'A4', 'C#5'], duration: 0.5 },  // F# menor
+    { notes: ['G4', 'B4', 'D5'], duration: 0.5 },    // G mayor
+    { notes: ['A4', 'C#5', 'E5'], duration: 0.5 },   // A mayor
+    { notes: ['B4', 'D5', 'F#5'], duration: 0.5 },   // B menor
+    { notes: ['C#5', 'E5', 'G5'], duration: 0.5 },    // C# disminuido
+    { notes: ['D5', 'F#5', 'A5'], duration: 0.5 },   // D mayor
+  ];
+
+  playChordSequence(sequence);
+  document.getElementById('poetryBox').textContent = 'Escala mayor de D en acordes DF#A EGB F#AC# GBD ACF# BDF# C#EG DFA';
+}
+
+    function noteToFrequency(note) {
+  const noteRegex = /^([A-G])(#|b)?(\d)$/;
+  const noteSemitones = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 };
+
+  const match = note.match(noteRegex);
+  if (!match) throw new Error('Nota inválida: ' + note);
+
+  let [, pitch, accidental, octave] = match;
+  octave = parseInt(octave);
+
+  let semitoneIndex = noteSemitones[pitch.toUpperCase()];
+  if (accidental === '#') semitoneIndex += 1;
+  else if (accidental === 'b') semitoneIndex -= 1;
+
+  // Semitonos desde A4:
+  const semitonesFromA4 = semitoneIndex + (octave - 4) * 12;
+
+  return 440 * Math.pow(2, semitonesFromA4 / 12);
+}
   </script>
 
 </body>
