@@ -75,8 +75,10 @@
 
   <div class="key" onclick="playCScaleChords()">play C Major Scale (Acordes)</div>
   <div class="key" onclick="playDScaleChords()">play D Major Scale (Acordes)</div>
-
-
+  
+  <hr >
+  <div class="key" onclick="playHymnOfJoy()">playHymnOfJoy</div>
+  <div class="key" onclick="playHymnOfJoyWithMelody()">playHymnOfJoyWithMelody</div>
 
 
   <script>
@@ -291,6 +293,93 @@
       playChordSequence(sequence);
       document.getElementById('poetryBox').textContent = 'Escala mayor de C en acordes CEG DFA EGB FAC GBD ACE BDF CEG';
     }
+
+    function playHymnOfJoy() {
+      const sequence = [
+        { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C – acompaña E
+        { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
+        { notes: ['F4', 'A4', 'C5'], duration: 0.5 }, // F – acompaña F
+        { notes: ['G4', 'B4', 'D5'], duration: 0.5 }, // G – acompaña G
+
+        { notes: ['G4', 'B4', 'D5'], duration: 0.5 }, // G
+        { notes: ['F4', 'A4', 'C5'], duration: 0.5 }, // F
+        { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
+        { notes: ['D4', 'F4', 'A4'], duration: 0.5 }, // Dm
+
+        { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
+        { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
+        { notes: ['D4', 'F4', 'A4'], duration: 0.5 }, // Dm
+        { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
+
+        { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
+        { notes: ['D4', 'F4', 'A4'], duration: 0.5 }, // Dm
+      ];
+
+      playChordSequence(sequence);
+      document.getElementById('poetryBox').textContent = 'Himno a la Alegría – versión armónica simple';
+    }
+
+    function playHymnOfJoyWithMelody() {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      let currentTime = audioCtx.currentTime;
+
+      const melody = [
+        'E5', 'E5', 'F5', 'G5',  // E E F G
+        'G5', 'F5', 'E5', 'D5',  // G F E D
+        'C5', 'C5', 'D5', 'E5',  // C C D E
+        'E5', 'D5', 'D5'         // E D D
+      ];
+
+      const chords = [
+        ['C4', 'E4', 'G4'],
+        ['C4', 'E4', 'G4'],
+        ['F4', 'A4', 'C5'],
+        ['G4', 'B4', 'D5'],
+
+        ['G4', 'B4', 'D5'],
+        ['F4', 'A4', 'C5'],
+        ['C4', 'E4', 'G4'],
+        ['D4', 'F4', 'A4'],
+
+        ['C4', 'E4', 'G4'],
+        ['C4', 'E4', 'G4'],
+        ['D4', 'F4', 'A4'],
+        ['C4', 'E4', 'G4'],
+
+        ['C4', 'E4', 'G4'],
+        ['D4', 'F4', 'A4'],
+      ];
+
+      // Recorrer melodía y acordes al mismo tiempo
+      for (let i = 0; i < melody.length; i++) {
+        const noteFreq = noteToFrequency(melody[i]);
+
+        const melodyOsc = audioCtx.createOscillator();
+        melodyOsc.type = 'sine';
+        melodyOsc.frequency.setValueAtTime(noteFreq, currentTime);
+        melodyOsc.connect(audioCtx.destination);
+        melodyOsc.start(currentTime);
+        melodyOsc.stop(currentTime + 0.45);
+
+        // reproducir acorde si existe (evita error en mismatch)
+        if (chords[i]) {
+          chords[i].forEach(note => {
+            const chordFreq = noteToFrequency(note);
+            const osc = audioCtx.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(chordFreq, currentTime);
+            osc.connect(audioCtx.destination);
+            osc.start(currentTime);
+            osc.stop(currentTime + 0.45);
+          });
+        }
+
+        currentTime += 0.5;
+      }
+
+      document.getElementById('poetryBox').textContent = '🎶 Himno a la Alegría (Melodía + Armonía)';
+    }
+
   </script>
 
 </body>
