@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Altar Sonoro Pentatónico</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #fff;
+      font-family: 'Georgia', serif;
+      text-align: center;
+      padding: 2em;
+    }
+    .key {
+      display: inline-block;
+      margin: 1em;
+      padding: 1em 2em;
+      border: 2px solid #fff;
+      border-radius: 1em;
+      background-color: #333;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .key:hover {
+      background-color: #444;
+    }
+    .poetry {
+      margin-top: 1em;
+      font-style: italic;
+      opacity: 0.8;
+    }
+    hr {
+      margin: 3em auto;
+      width: 60%;
+      border: none;
+      height: 1px;
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Altar Sonoro Pentatónico</h1>
+  <p>Toca una nota. Deja que te hable.</p>
+
+  <div id="noteButtons"></div>
+
+  <hr>
+
+<div class="key" onclick="playChord([261.63, 329.63, 392.00], 'Acorde DO (Raíz) – Tres caminos se funden en uno.')">C Mayor (C–E–G)</div>
+<div class="key" onclick="playChord([329.63, 392.00, 523.25], 'Primera inversión – El viaje comienza desde el corazón.')">C – 1ra inversión (E–G–C)</div>
+<div class="key" onclick="playChord([392.00, 523.25, 659.26], 'Segunda inversión – La luz desciende, firme y clara.')">C – 2da inversión (G–C–E)</div>
+<div class="key" onclick="playChord([261.63, 415.30, 349.23], 'Armonía negativa – Lo que fuiste, vuelve desde otro cielo.')">C en armonía negativa (C–Ab–F)</div>
+<div class="key" onclick="playChord([415.30, 349.23, 523.25], '1ra inversión negativa – El corazón se abre desde la sombra.')">C negativa – 1ra inversión (Ab–F–C)</div>
+<div class="key" onclick="playChord([349.23, 523.25, 622.25], '2da inversión negativa – La raíz canta desde el revés del alma.')">C negativa – 2da inversión (F–C–Ab)</div>
+
+
+
+  <div class="poetry" id="poetryBox">—</div>
+
+  <script>
+    const scale = [
+      { note: "C", freq: 261.63 },
+      { note: "C#", freq: 277.18 },
+      { note: "D", freq: 293.66 },
+      { note: "D#", freq: 311.13 },
+      { note: "E", freq: 329.63 },
+      { note: "F", freq: 349.23 },
+      { note: "F#", freq: 369.99 },
+      { note: "G", freq: 392.00 },
+      { note: "G#", freq: 415.30 },
+      { note: "A", freq: 440.00 },
+      { note: "A#", freq: 466.16 },
+      { note: "B", freq: 493.88 }
+    ];
+
+    const container = document.getElementById("noteButtons");
+
+    scale.forEach(({ note, freq }) => {
+      const btn = document.createElement('div');
+      btn.className = 'key';
+      btn.textContent = note;
+      btn.onclick = () => playNote(freq, `Nota ${note} – Vibración: ${freq.toFixed(2)} Hz`);
+      container.appendChild(btn);
+    });
+
+    function playNote(frequency, message) {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+      oscillator.connect(audioCtx.destination);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 1);
+
+      document.getElementById('poetryBox').textContent = message;
+    }
+
+    function playChord(frequencies, message) {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      frequencies.forEach(freq => {
+        const oscillator = audioCtx.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        oscillator.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 1);
+      });
+
+      document.getElementById('poetryBox').textContent = message;
+    }
+  </script>
+
+</body>
+</html>
