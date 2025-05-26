@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Altar Sonoro Pentatónico</title>
@@ -11,6 +12,7 @@
       text-align: center;
       padding: 2em;
     }
+
     .key {
       display: inline-block;
       margin: 1em;
@@ -21,14 +23,17 @@
       cursor: pointer;
       transition: 0.2s;
     }
+
     .key:hover {
       background-color: #444;
     }
+
     .poetry {
       margin-top: 1em;
       font-style: italic;
       opacity: 0.8;
     }
+
     hr {
       margin: 3em auto;
       width: 60%;
@@ -38,6 +43,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <h1>Altar Sonoro Pentatónico</h1>
@@ -45,29 +51,36 @@
 
   <div id="noteButtons"></div>
 
-  <hr>
+  <hr />
 
-<div class="key" onclick="playChord(['C4', 'E4', 'G4'], 'Acorde DO (Raíz) – Tres caminos se funden en uno.')">C Mayor (C–E–G)</div>
-<div class="key" onclick="playChord(['E4', 'G4', 'C5'], 'Primera inversión – El viaje comienza desde el corazón.')">C – 1ra inversión (E–G–C)</div>
-<div class="key" onclick="playChord(['G4', 'C5', 'E5'], 'Segunda inversión – La luz desciende, firme y clara.')">C – 2da inversión (G–C–E)</div>
+  <div class="key" onclick="playChord(['C4', 'E4', 'G4'], 'Acorde DO (Raíz) – Tres caminos se funden en uno.')">C Mayor (C–E–G)</div>
+  <div class="key" onclick="playChord(['E4', 'G4', 'C5'], 'Primera inversión – El viaje comienza desde el corazón.')">C – 1ra inversión (E–G–C)</div>
+  <div class="key" onclick="playChord(['G4', 'C5', 'E5'], 'Segunda inversión – La luz desciende, firme y clara.')">C – 2da inversión (G–C–E)</div>
 
-<hr>
+  <hr />
 
-<div class="key" onclick="playChord(['C4', 'Ab4', 'F4'], 'Armonía negativa – Lo que fuiste, vuelve desde otro cielo.')">C en armonía negativa (C–Ab–F)</div>
-<div class="key" onclick="playChord(['Ab4','F4','C5'], '1ra inversión negativa – El corazón se abre desde la sombra.')">C negativa – 1ra inversión (Ab–F–C)</div>
-<div class="key" onclick="playChord(['F4', 'C5', 'Ab5'], '2da inversión negativa – La raíz canta desde el revés del alma.')">C negativa – 2da inversión (F–C–Ab)</div>
+  <div class="key" onclick="playChord(['C4', 'Ab4', 'F4'], 'Armonía negativa – Lo que fuiste, vuelve desde otro cielo.')">C en armonía negativa (C–Ab–F)</div>
+  <div class="key" onclick="playChord(['Ab4','F4','C5'], '1ra inversión negativa – El corazón se abre desde la sombra.')">C negativa – 1ra inversión (Ab–F–C)</div>
+  <div class="key" onclick="playChord(['F4', 'C5', 'Ab5'], '2da inversión negativa – La raíz canta desde el revés del alma.')">C negativa – 2da inversión (F–C–Ab)</div>
 
-
-<hr style="margin: 2em 0; border-color: #555;" />
-
-<div class="key" onclick="playDScaleNotes()">play D Scale (Notas)</div>
-<div class="key" onclick="playDScaleChords()">play D Scale (Acordes)</div>
 
   <div class="poetry" id="poetryBox">—</div>
-  
+
+  <hr />
+
+  <div class="key" onclick="playCScaleNotes()">play C Major Scale (Notas)</div>
+  <div class="key" onclick="playDScaleNotes()">play D Major Scale (Notas)</div>
+
+  <hr />
+
+  <div class="key" onclick="playCScaleChords()">play C Major Scale (Acordes)</div>
+  <div class="key" onclick="playDScaleChords()">play D Major Scale (Acordes)</div>
+
+
+
 
   <script>
-const scale = [
+    const scale = [
       { note: "C", freq: 261.63 },
       { note: "C#", freq: 277.18 },
       { note: "D", freq: 293.66 },
@@ -211,49 +224,75 @@ const scale = [
         currentTime += duration;
       });
     }
-function noteToFrequency(note) {
-  const noteRegex = /^([A-G])(#|b)?(\d)$/;
-  const noteSemitones = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 };
+    function noteToFrequency(note) {
+      const noteRegex = /^([A-G])(#|b)?(\d)$/;
+      const noteSemitones = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 };
 
-  const match = note.match(noteRegex);
-  if (!match) throw new Error('Nota inválida: ' + note);
+      const match = note.match(noteRegex);
+      if (!match) throw new Error('Nota inválida: ' + note);
 
-  let [, pitch, accidental, octave] = match;
-  octave = parseInt(octave);
+      let [, pitch, accidental, octave] = match;
+      octave = parseInt(octave);
 
-  let semitoneIndex = noteSemitones[pitch.toUpperCase()];
-  if (accidental === '#') semitoneIndex += 1;
-  else if (accidental === 'b') semitoneIndex -= 1;
+      let semitoneIndex = noteSemitones[pitch.toUpperCase()];
+      if (accidental === '#') semitoneIndex += 1;
+      else if (accidental === 'b') semitoneIndex -= 1;
 
-  // Semitonos desde A4:
-  const semitonesFromA4 = semitoneIndex + (octave - 4) * 12;
+      // Semitonos desde A4:
+      const semitonesFromA4 = semitoneIndex + (octave - 4) * 12;
 
-  return 440 * Math.pow(2, semitonesFromA4 / 12);
-}
+      return 440 * Math.pow(2, semitonesFromA4 / 12);
+    }
 
-function playDScaleNotes() {
-  const notes = ['D4', 'E4', 'F#4', 'G4', 'A4', 'B4', 'C#5', 'D5'];
-  const sequence = notes.map(note => ({ notes: [note], duration: 0.5 }));
-  
-  playChordSequence(sequence);
-  document.getElementById('poetryBox').textContent = 'Escala mayor de D en notas D Em F#m G A Bm C#dim D';
-}
-function playDScaleChords() {
-  const sequence = [
-    { notes: ['D4', 'F#4', 'A4'], duration: 0.5 },   // D mayor
-    { notes: ['E4', 'G4', 'B4'], duration: 0.5 },    // E menor
-    { notes: ['F#4', 'A4', 'C#5'], duration: 0.5 },  // F# menor
-    { notes: ['G4', 'B4', 'D5'], duration: 0.5 },    // G mayor
-    { notes: ['A4', 'C#5', 'E5'], duration: 0.5 },   // A mayor
-    { notes: ['B4', 'D5', 'F#5'], duration: 0.5 },   // B menor
-    { notes: ['C#5', 'E5', 'G5'], duration: 0.5 },    // C# disminuido
-    { notes: ['D5', 'F#5', 'A5'], duration: 0.5 },   // D mayor
-  ];
+    function playDScaleNotes() {
+      const notes = ['D4', 'E4', 'F#4', 'G4', 'A4', 'B4', 'C#5', 'D5'];
+      const sequence = notes.map(note => ({ notes: [note], duration: 0.5 }));
 
-  playChordSequence(sequence);
-  document.getElementById('poetryBox').textContent = 'Escala mayor de D en acordes DF#A EGB F#AC# GBD ACF# BDF# C#EG DFA';
-}
+      playChordSequence(sequence);
+      document.getElementById('poetryBox').textContent = 'Escala mayor de D en notas D Em F#m G A Bm C#dim D';
+    }
+
+    function playCScaleNotes() {
+      const notes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
+      const sequence = notes.map(note => ({ notes: [note], duration: 0.5 }));
+
+      playChordSequence(sequence);
+      document.getElementById('poetryBox').textContent = 'Escala mayor de D en notas D Em F#m G A Bm C#dim D';
+    }
+
+    function playDScaleChords() {
+      const sequence = [
+        { notes: ['D4', 'F#4', 'A4'], duration: 0.5 },   // D mayor
+        { notes: ['E4', 'G4', 'B4'], duration: 0.5 },    // E menor
+        { notes: ['F#4', 'A4', 'C#5'], duration: 0.5 },  // F# menor
+        { notes: ['G4', 'B4', 'D5'], duration: 0.5 },    // G mayor
+        { notes: ['A4', 'C#5', 'E5'], duration: 0.5 },   // A mayor
+        { notes: ['B4', 'D5', 'F#5'], duration: 0.5 },   // B menor
+        { notes: ['C#5', 'E5', 'G5'], duration: 0.5 },    // C# disminuido
+        { notes: ['D5', 'F#5', 'A5'], duration: 0.5 },   // D mayor
+      ];
+
+      playChordSequence(sequence);
+      document.getElementById('poetryBox').textContent = 'Escala mayor de D en acordes DF#A EGB F#AC# GBD ACF# BDF# C#EG DFA';
+    }
+
+    function playCScaleChords() {
+      const sequence = [
+        { notes: ['C4', 'E4', 'G4'], duration: 0.5 },   // C mayor
+        { notes: ['D4', 'F4', 'A4'], duration: 0.5 },   // D menor
+        { notes: ['E4', 'G4', 'B4'], duration: 0.5 },   // E menor
+        { notes: ['F4', 'A4', 'C5'], duration: 0.5 },   // F mayor
+        { notes: ['G4', 'B4', 'D5'], duration: 0.5 },   // G mayor
+        { notes: ['A4', 'C5', 'E5'], duration: 0.5 },   // A menor
+        { notes: ['B4', 'D5', 'F5'], duration: 0.5 },   // B disminuido
+        { notes: ['C5', 'E5', 'G5'], duration: 0.5 },   // C mayor
+      ];
+
+      playChordSequence(sequence);
+      document.getElementById('poetryBox').textContent = 'Escala mayor de C en acordes CEG DFA EGB FAC GBD ACE BDF CEG';
+    }
   </script>
 
 </body>
+
 </html>
