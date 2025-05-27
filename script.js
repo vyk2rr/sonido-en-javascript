@@ -16,9 +16,15 @@ const scale = [
   { note: "B", freq: 493.88 }
 ];
 
-window.scale = scale;
+let earTrainerScale = 'C';
+let currentProgressionIndices = [0, 4, 0];
 
-const degreeMap = [
+window.scale = scale;
+window.earTrainerScale = earTrainerScale;
+
+
+// Escalas para Ear Trainer
+const degreeMapC = [
   { name: "I",    chord: ['C4','E4','G4'] },
   { name: "ii",   chord: ['D4','F4','A4'] },
   { name: "iii",  chord: ['E4','G4','B4'] },
@@ -27,6 +33,21 @@ const degreeMap = [
   { name: "vi",   chord: ['A4','C5','E5'] },
   { name: "vii°", chord: ['B4','D5','F5'] }
 ];
+
+const degreeMapD = [
+  { name: "I",    chord: ['D4','F#4','A4'] },
+  { name: "ii",   chord: ['E4','G4','B4'] },
+  { name: "iii",  chord: ['F#4','A4','C#5'] },
+  { name: "IV",   chord: ['G4','B4','D5'] },
+  { name: "V",    chord: ['A4','C#5','E5'] },
+  { name: "vi",   chord: ['B4','D5','F#5'] },
+  { name: "vii°", chord: ['C#5','E5','G5'] }
+];
+
+// Elije el degreeMap según la escala seleccionada
+function getCurrentDegreeMap() {
+  return earTrainerScale === 'D' ? degreeMapD : degreeMapC;
+}
 
 const rootColorMap = {
   'C': '#e74c3c',     // rojo
@@ -308,18 +329,17 @@ function playCScaleChords() {
 // =====================
 let currentProgression = {
   display: "I → V → I",
-  chords: [degreeMap[0].chord, degreeMap[4].chord, degreeMap[0].chord]
+  chords: [getCurrentDegreeMap()[0].chord, getCurrentDegreeMap()[4].chord, getCurrentDegreeMap()[0].chord]
 };
 
 function randomProgression(length = 4) {
+  const degreeMap = getCurrentDegreeMap();
   const tonicIndex = 0; // I
   let indices = [];
-  // Decide aleatoriamente si la tónica va al inicio o al final
   const tonicAtStart = Math.random() < 0.5;
   if (tonicAtStart) indices.push(tonicIndex);
   while (indices.length < length - (tonicAtStart ? 0 : 1)) {
     let idx = Math.floor(Math.random() * degreeMap.length);
-    // Evita la tónica en medio y acordes consecutivos iguales
     if (
       idx !== tonicIndex &&
       (indices.length === 0 || indices[indices.length - 1] !== idx)
@@ -352,9 +372,33 @@ function playProgression() {
   playNext();
 }
 
-function refreshProgression() {
-  currentProgression = randomProgression(3 + Math.floor(Math.random() * 2)); // 3 o 4 grados
+function updateCurrentProgression() {
+  const degreeMap = getCurrentDegreeMap();
+  currentProgression = {
+    display: currentProgressionIndices.map(i => degreeMap[i].name).join(" → "),
+    chords: currentProgressionIndices.map(i => degreeMap[i].chord)
+  };
   document.getElementById('progressionDisplay').textContent = currentProgression.display;
+}
+
+function refreshProgression() {
+  const degreeMap = getCurrentDegreeMap();
+  const tonicIndex = 0;
+  let indices = [];
+  const tonicAtStart = Math.random() < 0.5;
+  if (tonicAtStart) indices.push(tonicIndex);
+  while (indices.length < 3 + Math.floor(Math.random() * 2) - (tonicAtStart ? 0 : 1)) {
+    let idx = Math.floor(Math.random() * degreeMap.length);
+    if (
+      idx !== tonicIndex &&
+      (indices.length === 0 || indices[indices.length - 1] !== idx)
+    ) {
+      indices.push(idx);
+    }
+  }
+  if (!tonicAtStart) indices.push(tonicIndex);
+  currentProgressionIndices = indices;
+  updateCurrentProgression();
 }
 
 function highlightPianoKey(note, duration = 1000) {
