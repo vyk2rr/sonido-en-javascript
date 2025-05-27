@@ -47,8 +47,56 @@
     <button class="key" onclick="refreshProgression()" style="margin-left:1em;">Secuencia aleatoria</button>
   </div>
 
+<div class="piano-container">
+  <div class="piano">
+    <!-- Teclas blancas (2 octavas: C to B x2) -->
+    <div class="white-key" data-note="C4"></div>
+    <div class="white-key" data-note="D4"></div>
+    <div class="white-key" data-note="E4"></div>
+    <div class="white-key" data-note="F4"></div>
+    <div class="white-key" data-note="G4"></div>
+    <div class="white-key" data-note="A4"></div>
+    <div class="white-key" data-note="B4"></div>
+    <div class="white-key" data-note="C5"></div>
+    <div class="white-key" data-note="D5"></div>
+    <div class="white-key" data-note="E5"></div>
+    <div class="white-key" data-note="F5"></div>
+    <div class="white-key" data-note="G5"></div>
+    <div class="white-key" data-note="A5"></div>
+    <div class="white-key" data-note="B5"></div>
+
+    <!-- Teclas negras con posición absoluta -->
+    <div class="black-key" data-note="C#4" style="left: 40px;"></div>
+    <div class="black-key" data-note="D#4" style="left: 100px;"></div>
+    <div class="black-key" data-note="F#4" style="left: 220px;"></div>
+    <div class="black-key" data-note="G#4" style="left: 280px;"></div>
+    <div class="black-key" data-note="A#4" style="left: 340px;"></div>
+    <div class="black-key" data-note="C#5" style="left: 460px;"></div>
+    <div class="black-key" data-note="D#5" style="left: 520px;"></div>
+    <div class="black-key" data-note="F#5" style="left: 640px;"></div>
+    <div class="black-key" data-note="G#5" style="left: 700px;"></div>
+    <div class="black-key" data-note="A#5" style="left: 760px;"></div>
+  </div>
+</div>
 
   <script src="./script.js"></script>
+  <script>
+    document.querySelectorAll('.white-key, .black-key').forEach(key => {
+      key.onclick = () => {
+        const note = key.getAttribute('data-note');
+        // Busca la frecuencia en tu array scale
+        const noteObj = window.scale.find(n => n.note + (note.length > 2 ? note.slice(1) : '') === note.replace(/\d/, ''));
+        // Si no encuentra por enharmonía, busca por nombre exacto
+        const found = noteObj || window.scale.find(n => n.note === note.replace(/\d/, ''));
+        if (found) {
+          playNote(found.freq, `Nota ${note} – Vibración: ${found.freq.toFixed(2)} Hz`);
+          highlightPianoKey(note);
+        }
+      };
+    });
+  </script>
+
+  
 </body>
 
 </html>

@@ -59,3 +59,43 @@ hr {
 #progressionBox .key:hover {
   background: #eee;
 }
+
+
+
+
+
+.piano-container {
+    display: inline-block;
+    padding: 8px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+
+  .piano {
+    position: relative;
+    width: 840px;
+    height: 200px;
+  }
+
+  .white-key {
+    width: 60px;
+    height: 200px;
+    background: white;
+    border: 1px solid #000;
+    float: left;
+    box-sizing: border-box;
+  }
+
+  .black-key {
+    width: 40px;
+    height: 120px;
+    background: black;
+    position: absolute;
+    z-index: 2;
+  }
+
+  .active-key {
+    background: #ffe082 !important;
+    box-shadow: 0 0 10px #ffd54f;
+  }
