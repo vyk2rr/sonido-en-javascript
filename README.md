@@ -1,5 +1,7 @@
 # 🎹 Atril Sonoro Pentatónico
 
+disclaimer: Demo interactivo para explorar acordes y escalas usando JavaScript puro y la Web Audio API. Este proyecto es solo una prueba y un experimento personal, así que el código puede estar desordenado y necesita refactorización. Estoy jugando y explorando ideas creativas, no es un producto final. ¡Disfruta explorando!
+
 Una interfaz web interactiva para explorar acordes, inversiones, armonías negativas y escalas musicales desde el navegador. Diseñado para artistas, músicos, creadores de experiencias inmersivas y curiosos del sonido.
 
 <img width="641" alt="image" src="https://github.com/user-attachments/assets/cb67350b-fedc-4d9e-9d9a-763372779018" />
@@ -29,8 +31,6 @@ Diseño visual o accesibilidad
 Refactor o modularización del JS
 
 ⚖️ Licencia MIT
-
-Puedes usarlo, modificarlo, compartirlo, adaptarlo, incluso integrarlo en otros proyectos.
 
 Solo tres cosas sencillas:
 - Menciona la fuente si lo compartes o lo integras en algo público.
