@@ -40,8 +40,14 @@
   <div class="key" onclick="playDScaleChords()">play D Major Scale (Acordes)</div>
 
   <div id="progressionBox" style="margin: 2em 0; padding: 1em; border: 1px solid #ccc;">
-    <h2>Ear trainer (C scale)</h2>
-
+    <h2>
+      Ear trainer (
+      <select id="scaleSelector" style="font-size:1em;">
+        <option value="C">C</option>
+        <option value="D">D</option>
+      </select>
+      scale)
+    </h2>
     <div id="progressionDisplay" style="font-size: 1.5em; margin-bottom: 1em;">I → V → I</div>
     <button class="key" onclick="playProgression()">Reproducir secuencia</button>
     <button class="key" onclick="refreshProgression()" style="margin-left:1em;">Secuencia aleatoria</button>
@@ -81,18 +87,29 @@
 
   <script src="./script.js"></script>
   <script>
-    document.querySelectorAll('.white-key, .black-key').forEach(key => {
-      key.onclick = () => {
-        const note = key.getAttribute('data-note');
-        // Busca la frecuencia en tu array scale
-        const noteObj = window.scale.find(n => n.note + (note.length > 2 ? note.slice(1) : '') === note.replace(/\d/, ''));
-        // Si no encuentra por enharmonía, busca por nombre exacto
-        const found = noteObj || window.scale.find(n => n.note === note.replace(/\d/, ''));
-        if (found) {
-          playNote(found.freq, `Nota ${note} – Vibración: ${found.freq.toFixed(2)} Hz`);
-          highlightPianoKey(note);
+    document.addEventListener('DOMContentLoaded', () => {
+        const selector = document.getElementById('scaleSelector');
+        if (selector) {
+          selector.value = earTrainerScale;
+          selector.addEventListener('change', (e) => {
+            earTrainerScale = e.target.value;
+            updateCurrentProgression(); // Solo cambia los acordes, no los grados
+          });
         }
-      };
+
+        document.querySelectorAll('.white-key, .black-key').forEach(key => {
+        key.onclick = () => {
+          const note = key.getAttribute('data-note');
+          // Busca la frecuencia en el array scale
+          const noteObj = window.scale.find(n => n.note + (note.length > 2 ? note.slice(1) : '') === note.replace(/\d/, ''));
+          // Si no encuentra por enharmonía, busca por nombre exacto
+          const found = noteObj || window.scale.find(n => n.note === note.replace(/\d/, ''));
+          if (found) {
+            playNote(found.freq, `Nota ${note} – Vibración: ${found.freq.toFixed(2)} Hz`);
+            highlightPianoKey(note);
+          }
+        };
+      });
     });
   </script>
 
