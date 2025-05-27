@@ -1,3 +1,6 @@
+// =====================
+// CONFIGURACIÓN GENERAL
+// =====================
 const scale = [
   { note: "C", freq: 261.63 },
   { note: "C#", freq: 277.18 },
@@ -13,14 +16,64 @@ const scale = [
   { note: "B", freq: 493.88 }
 ];
 
+const degreeMap = [
+  { name: "I",    chord: ['C4','E4','G4'] },
+  { name: "ii",   chord: ['D4','F4','A4'] },
+  { name: "iii",  chord: ['E4','G4','B4'] },
+  { name: "IV",   chord: ['F4','A4','C5'] },
+  { name: "V",    chord: ['G4','B4','D5'] },
+  { name: "vi",   chord: ['A4','C5','E5'] },
+  { name: "vii°", chord: ['B4','D5','F5'] }
+];
+
+const rootColorMap = {
+  'C': '#e74c3c',     // rojo
+  'D': '#e67e22',     // naranja
+  'E': '#f1c40f',     // amarillo
+  'F': '#2ecc71',     // verde
+  'G': '#3498db',     // azul
+  'A': '#1a237e',     // azul oscuro
+  'B': '#9b59b6'      // morado
+};
+
+// =====================
+// AUDIO CONTEXT GLOBAL
+// =====================
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+// =====================
+// UTILIDADES
+// =====================
 function getRootColorFromNote(note) {
-  // note es tipo "C", "D#", etc.
   return rootColorMap[note[0]] || '#fff';
 }
 
+function getRootColor(chord) {
+  // chord es un array como ['C4','E4','G4']
+  const root = chord[0][0];
+  return rootColorMap[root] || '#fff';
+}
+
+function noteToFrequency(note) {
+  const noteRegex = /^([A-G])(#|b)?(\d)$/;
+  const noteSemitones = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 };
+  const match = note.match(noteRegex);
+  if (!match) throw new Error('Nota inválida: ' + note);
+  let [, pitch, accidental, octave] = match;
+  octave = parseInt(octave);
+  let semitoneIndex = noteSemitones[pitch.toUpperCase()];
+  if (accidental === '#') semitoneIndex += 1;
+  else if (accidental === 'b') semitoneIndex -= 1;
+  const semitonesFromA4 = semitoneIndex + (octave - 4) * 12;
+  return 440 * Math.pow(2, semitonesFromA4 / 12);
+}
+
+// =====================
+// GENERACIÓN DE BOTONES DE NOTA
+// =====================
 const container = document.getElementById("noteButtons");
 let originalNoteButtonsBg = null;
-let noteBgClickId = 0; // contador global
+let noteBgClickId = 0;
 
 scale.forEach(({ note, freq }) => {
   const btn = document.createElement('div');
@@ -31,15 +84,11 @@ scale.forEach(({ note, freq }) => {
     if (originalNoteButtonsBg === null) {
       originalNoteButtonsBg = noteButtonsDiv.style.background;
     }
-    noteBgClickId++; // incrementa el identificador
+    noteBgClickId++;
     const thisClickId = noteBgClickId;
-
     noteButtonsDiv.style.background = getRootColorFromNote(note);
-
     playNote(freq, `Nota ${note} – Vibración: ${freq.toFixed(2)} Hz`);
-
     setTimeout(() => {
-      // Solo el último clic puede restaurar el color
       if (noteBgClickId === thisClickId) {
         noteButtonsDiv.style.background = originalNoteButtonsBg;
       }
@@ -48,11 +97,11 @@ scale.forEach(({ note, freq }) => {
   container.appendChild(btn);
 });
 
-// Versión embellecida con ADSR y filtro
+// =====================
+// FUNCIONES DE AUDIO
+// =====================
 function playNote(frequency, message) {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const now = audioCtx.currentTime;
-
   const oscillator = audioCtx.createOscillator();
   oscillator.type = 'triangle';
   oscillator.frequency.setValueAtTime(frequency, now);
@@ -67,12 +116,7 @@ function playNote(frequency, message) {
   gainNode.connect(audioCtx.destination);
 
   // ADSR
-  const attack = 0.05;
-  const decay = 0.1;
-  const sustainLevel = 0.6;
-  const release = 0.3;
-  const duration = 1;
-
+  const attack = 0.05, decay = 0.1, sustainLevel = 0.6, release = 0.3, duration = 1;
   gainNode.gain.setValueAtTime(0, now);
   gainNode.gain.linearRampToValueAtTime(1, now + attack);
   gainNode.gain.linearRampToValueAtTime(sustainLevel, now + attack + decay);
@@ -86,15 +130,11 @@ function playNote(frequency, message) {
 }
 
 function playChord(notes, message) {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const now = audioCtx.currentTime;
-
   notes.forEach(note => {
     const freq = typeof note === 'string' ? noteToFrequency(note) : note;
-
     const oscillator = audioCtx.createOscillator();
     oscillator.type = 'triangle';
-
     oscillator.frequency.setValueAtTime(freq, now);
 
     const gainNode = audioCtx.createGain();
@@ -106,13 +146,8 @@ function playChord(notes, message) {
     filter.connect(gainNode);
     gainNode.connect(audioCtx.destination);
 
-    // ADSR (ataque más corto para acordes)
-    const attack = 0.03;
-    const decay = 0.1;
-    const sustainLevel = 0.5;
-    const release = 0.3;
-    const duration = 1;
-
+    // ADSR para acordes
+    const attack = 0.03, decay = 0.1, sustainLevel = 0.5, release = 0.3, duration = 1;
     gainNode.gain.setValueAtTime(0, now);
     gainNode.gain.linearRampToValueAtTime(1, now + attack);
     gainNode.gain.linearRampToValueAtTime(sustainLevel, now + attack + decay);
@@ -122,21 +157,16 @@ function playChord(notes, message) {
     oscillator.start(now);
     oscillator.stop(now + duration);
   });
-
   document.getElementById('poetryBox').textContent = message || '—';
 }
 
 function playChordSequence(sequence) {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   let currentTime = audioCtx.currentTime;
-
   sequence.forEach(({ notes, duration }) => {
     notes.forEach(note => {
       const freq = typeof note === 'string' ? noteToFrequency(note) : note;
-
       const oscillator = audioCtx.createOscillator();
       oscillator.type = 'triangle';
-
       oscillator.frequency.setValueAtTime(freq, currentTime);
 
       const gainNode = audioCtx.createGain();
@@ -148,12 +178,8 @@ function playChordSequence(sequence) {
       filter.connect(gainNode);
       gainNode.connect(audioCtx.destination);
 
-      // ADSR para secuencias, más cortos porque son más rápidas
-      const attack = 0.02;
-      const decay = 0.05;
-      const sustainLevel = 0.6;
-      const release = 0.1;
-
+      // ADSR para secuencias
+      const attack = 0.02, decay = 0.05, sustainLevel = 0.6, release = 0.1;
       gainNode.gain.setValueAtTime(0, currentTime);
       gainNode.gain.linearRampToValueAtTime(1, currentTime + attack);
       gainNode.gain.linearRampToValueAtTime(sustainLevel, currentTime + attack + decay);
@@ -163,34 +189,16 @@ function playChordSequence(sequence) {
       oscillator.start(currentTime);
       oscillator.stop(currentTime + duration);
     });
-
     currentTime += duration;
   });
 }
-function noteToFrequency(note) {
-  const noteRegex = /^([A-G])(#|b)?(\d)$/;
-  const noteSemitones = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 };
 
-  const match = note.match(noteRegex);
-  if (!match) throw new Error('Nota inválida: ' + note);
-
-  let [, pitch, accidental, octave] = match;
-  octave = parseInt(octave);
-
-  let semitoneIndex = noteSemitones[pitch.toUpperCase()];
-  if (accidental === '#') semitoneIndex += 1;
-  else if (accidental === 'b') semitoneIndex -= 1;
-
-  // Semitonos desde A4:
-  const semitonesFromA4 = semitoneIndex + (octave - 4) * 12;
-
-  return 440 * Math.pow(2, semitonesFromA4 / 12);
-}
-
+// =====================
+// FUNCIONES DE ESCALAS Y ACORDES
+// =====================
 function playDScaleNotes() {
   const notes = ['D4', 'E4', 'F#4', 'G4', 'A4', 'B4', 'C#5', 'D5'];
   const sequence = notes.map(note => ({ notes: [note], duration: 0.5 }));
-
   playChordSequence(sequence);
   document.getElementById('poetryBox').textContent = 'Escala mayor de D en notas D Em F#m G A Bm C#dim D';
 }
@@ -198,53 +206,43 @@ function playDScaleNotes() {
 function playCScaleNotes() {
   const notes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
   const sequence = notes.map(note => ({ notes: [note], duration: 0.5 }));
-
   playChordSequence(sequence);
   document.getElementById('poetryBox').textContent = 'Escala mayor de C en notas C Dm Em F G Am Bdim C';
 }
 
 function playDScaleChords() {
   const sequence = [
-    { notes: ['D4', 'F#4', 'A4'], duration: 0.5 },   // D mayor
-    { notes: ['E4', 'G4', 'B4'], duration: 0.5 },    // E menor
-    { notes: ['F#4', 'A4', 'C#5'], duration: 0.5 },  // F# menor
-    { notes: ['G4', 'B4', 'D5'], duration: 0.5 },    // G mayor
-    { notes: ['A4', 'C#5', 'E5'], duration: 0.5 },   // A mayor
-    { notes: ['B4', 'D5', 'F#5'], duration: 0.5 },   // B menor
-    { notes: ['C#5', 'E5', 'G5'], duration: 0.5 },    // C# disminuido
-    { notes: ['D5', 'F#5', 'A5'], duration: 0.5 },   // D mayor
+    { notes: ['D4', 'F#4', 'A4'], duration: 0.5 },
+    { notes: ['E4', 'G4', 'B4'], duration: 0.5 },
+    { notes: ['F#4', 'A4', 'C#5'], duration: 0.5 },
+    { notes: ['G4', 'B4', 'D5'], duration: 0.5 },
+    { notes: ['A4', 'C#5', 'E5'], duration: 0.5 },
+    { notes: ['B4', 'D5', 'F#5'], duration: 0.5 },
+    { notes: ['C#5', 'E5', 'G5'], duration: 0.5 },
+    { notes: ['D5', 'F#5', 'A5'], duration: 0.5 }
   ];
-
   playChordSequence(sequence);
   document.getElementById('poetryBox').textContent = 'Escala mayor de D en acordes DF#A EGB F#AC# GBD ACF# BDF# C#EG DFA';
 }
 
 function playCScaleChords() {
   const sequence = [
-    { notes: ['C4', 'E4', 'G4'], duration: 0.5 },   // C mayor
-    { notes: ['D4', 'F4', 'A4'], duration: 0.5 },   // D menor
-    { notes: ['E4', 'G4', 'B4'], duration: 0.5 },   // E menor
-    { notes: ['F4', 'A4', 'C5'], duration: 0.5 },   // F mayor
-    { notes: ['G4', 'B4', 'D5'], duration: 0.5 },   // G mayor
-    { notes: ['A4', 'C5', 'E5'], duration: 0.5 },   // A menor
-    { notes: ['B4', 'D5', 'F5'], duration: 0.5 },   // B disminuido
-    { notes: ['C5', 'E5', 'G5'], duration: 0.5 },   // C mayor
+    { notes: ['C4', 'E4', 'G4'], duration: 0.5 },
+    { notes: ['D4', 'F4', 'A4'], duration: 0.5 },
+    { notes: ['E4', 'G4', 'B4'], duration: 0.5 },
+    { notes: ['F4', 'A4', 'C5'], duration: 0.5 },
+    { notes: ['G4', 'B4', 'D5'], duration: 0.5 },
+    { notes: ['A4', 'C5', 'E5'], duration: 0.5 },
+    { notes: ['B4', 'D5', 'F5'], duration: 0.5 },
+    { notes: ['C5', 'E5', 'G5'], duration: 0.5 }
   ];
-
   playChordSequence(sequence);
   document.getElementById('poetryBox').textContent = 'Escala mayor de C en acordes CEG DFA EGB FAC GBD ACE BDF CEG';
 }
 
-const degreeMap = [
-  { name: "I",    chord: ['C4','E4','G4'] },
-  { name: "ii",   chord: ['D4','F4','A4'] },
-  { name: "iii",  chord: ['E4','G4','B4'] },
-  { name: "IV",   chord: ['F4','A4','C5'] },
-  { name: "V",    chord: ['G4','B4','D5'] },
-  { name: "vi",   chord: ['A4','C5','E5'] },
-  { name: "vii°", chord: ['B4','D5','F5'] }
-];
-
+// =====================
+// EAR TRAINER: PROGRESIONES RANDOM
+// =====================
 let currentProgression = {
   display: "I → V → I",
   chords: [degreeMap[0].chord, degreeMap[4].chord, degreeMap[0].chord]
@@ -253,13 +251,9 @@ let currentProgression = {
 function randomProgression(length = 4) {
   const tonicIndex = 0; // I
   let indices = [];
-
   // Decide aleatoriamente si la tónica va al inicio o al final
   const tonicAtStart = Math.random() < 0.5;
-  if (tonicAtStart) {
-    indices.push(tonicIndex);
-  }
-
+  if (tonicAtStart) indices.push(tonicIndex);
   while (indices.length < length - (tonicAtStart ? 0 : 1)) {
     let idx = Math.floor(Math.random() * degreeMap.length);
     // Evita la tónica en medio y acordes consecutivos iguales
@@ -270,32 +264,11 @@ function randomProgression(length = 4) {
       indices.push(idx);
     }
   }
-
-  if (!tonicAtStart) {
-    indices.push(tonicIndex);
-  }
-
+  if (!tonicAtStart) indices.push(tonicIndex);
   return {
     display: indices.map(i => degreeMap[i].name).join(" → "),
     chords: indices.map(i => degreeMap[i].chord)
   };
-}
-
-// Mapeo de nota raíz a color
-const rootColorMap = {
-  'C': '#e74c3c',     // rojo
-  'D': '#e67e22',     // naranja
-  'E': '#f1c40f',     // amarillo
-  'F': '#2ecc71',     // verde
-  'G': '#3498db',     // azul
-  'A': '#1a237e',     // azul oscuro
-  'B': '#9b59b6'      // morado
-};
-
-function getRootColor(chord) {
-  // chord es un array como ['C4','E4','G4']
-  const root = chord[0][0]; // Primera letra de la nota raíz
-  return rootColorMap[root] || '#fff';
 }
 
 function playProgression() {
@@ -303,13 +276,11 @@ function playProgression() {
   let i = 0;
   function playNext() {
     if (i < prog.length) {
-      // Cambia el color de fondo según la nota raíz
       document.getElementById('progressionBox').style.background = getRootColor(prog[i]);
       playChord(prog[i]);
       i++;
       setTimeout(playNext, 900);
     } else {
-      // Restablece el fondo al terminar
       document.getElementById('progressionBox').style.background = '';
     }
   }
@@ -317,7 +288,6 @@ function playProgression() {
 }
 
 function refreshProgression() {
-  // Puedes cambiar el 3 por otro número para progresiones más largas
   currentProgression = randomProgression(3 + Math.floor(Math.random() * 2)); // 3 o 4 grados
   document.getElementById('progressionDisplay').textContent = currentProgression.display;
 }
