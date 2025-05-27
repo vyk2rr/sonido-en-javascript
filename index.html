@@ -47,11 +47,6 @@
     <button class="key" onclick="refreshProgression()" style="margin-left:1em;">Secuencia aleatoria</button>
   </div>
 
-  <hr />
-
-  <h2>Teclado de Piano</h2>
-  <p>Haz clic en las teclas para escuchar las notas.</p>
-
 <div class="piano-container">
   <div class="piano">
     <!-- Teclas blancas (2 octavas: C to B x2) -->
@@ -84,23 +79,24 @@
   </div>
 </div>
 
+  <script src="./script.js"></script>
   <script>
-  document.querySelectorAll('.white-key, .black-key').forEach(key => {
-    key.onclick = () => {
-      const note = key.getAttribute('data-note');
-      // Busca la frecuencia en tu array scale
-      const noteObj = window.scale.find(n => n.note + (note.length > 2 ? note.slice(1) : '') === note.replace(/\d/, ''));
-      // Si no encuentra por enharmonía, busca por nombre exacto
-      const found = noteObj || window.scale.find(n => n.note === note.replace(/\d/, ''));
-      if (found) {
-        playNote(found.freq, `Nota ${note} – Vibración: ${found.freq.toFixed(2)} Hz`);
-        highlightPianoKey(note);
-      }
-    };
-  });
+    document.querySelectorAll('.white-key, .black-key').forEach(key => {
+      key.onclick = () => {
+        const note = key.getAttribute('data-note');
+        // Busca la frecuencia en tu array scale
+        const noteObj = window.scale.find(n => n.note + (note.length > 2 ? note.slice(1) : '') === note.replace(/\d/, ''));
+        // Si no encuentra por enharmonía, busca por nombre exacto
+        const found = noteObj || window.scale.find(n => n.note === note.replace(/\d/, ''));
+        if (found) {
+          playNote(found.freq, `Nota ${note} – Vibración: ${found.freq.toFixed(2)} Hz`);
+          highlightPianoKey(note);
+        }
+      };
+    });
   </script>
 
-  <script src="./script.js"></script>
+  
 </body>
 
 </html>

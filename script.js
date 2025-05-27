@@ -223,7 +223,22 @@ function playDScaleChords() {
     { notes: ['C#5', 'E5', 'G5'], duration: 0.5 },
     { notes: ['D5', 'F#5', 'A5'], duration: 0.5 }
   ];
-  playChordSequence(sequence);
+
+  let i = 0;
+  function playNextChord() {
+    if (i < sequence.length) {
+      playChord(sequence[i].notes);
+      highlightPianoKey(sequence[i].notes);
+      i++;
+      setTimeout(playNextChord, sequence[i - 1].duration * 1000 + 100); // +100ms para evitar solapamiento
+    } else {
+      setTimeout(() => {
+        document.querySelectorAll('.white-key, .black-key').forEach(key => key.classList.remove('active-key'));
+      }, 600);
+    }
+  }
+  playNextChord();
+
   document.getElementById('poetryBox').textContent = 'Escala mayor de D en acordes DF#A EGB F#AC# GBD ACF# BDF# C#EG DFA';
 }
 
@@ -238,7 +253,22 @@ function playCScaleChords() {
     { notes: ['B4', 'D5', 'F5'], duration: 0.5 },
     { notes: ['C5', 'E5', 'G5'], duration: 0.5 }
   ];
-  playChordSequence(sequence);
+
+  let i = 0;
+  function playNextChord() {
+    if (i < sequence.length) {
+      playChord(sequence[i].notes);
+      highlightPianoKey(sequence[i].notes);
+      i++;
+      setTimeout(playNextChord, sequence[i - 1].duration * 1000 + 100); // +100ms para evitar solapamiento
+    } else {
+      setTimeout(() => {
+        document.querySelectorAll('.white-key, .black-key').forEach(key => key.classList.remove('active-key'));
+      }, 600);
+    }
+  }
+  playNextChord();
+
   document.getElementById('poetryBox').textContent = 'Escala mayor de C en acordes CEG DFA EGB FAC GBD ACE BDF CEG';
 }
 
@@ -275,13 +305,15 @@ function randomProgression(length = 4) {
 
 function playProgression() {
   const prog = currentProgression.chords;
+  const duration = 900; 
   let i = 0;
   function playNext() {
     if (i < prog.length) {
       document.getElementById('progressionBox').style.background = getRootColor(prog[i]);
       playChord(prog[i]);
+      highlightPianoKey(prog[i], duration); 
       i++;
-      setTimeout(playNext, 900);
+      setTimeout(playNext, duration);
     } else {
       document.getElementById('progressionBox').style.background = '';
     }
@@ -294,15 +326,18 @@ function refreshProgression() {
   document.getElementById('progressionDisplay').textContent = currentProgression.display;
 }
 
-function highlightPianoKey(note) {
-  // Quita la clase activa de todas las teclas
+function highlightPianoKey(note, duration = 1000) {
   document.querySelectorAll('.white-key, .black-key').forEach(key => key.classList.remove('active-key'));
-  // Busca la tecla correspondiente y la resalta
-  const key = document.querySelector(`[data-note="${note}"]`);
-  if (key) key.classList.add('active-key');
-  // Quita el highlight después de un tiempo
+  if (Array.isArray(note)) {
+    note.forEach(n => {
+      const key = document.querySelector(`[data-note="${n}"]`);
+      if (key) key.classList.add('active-key');
+    });
+  } else {
+    const key = document.querySelector(`[data-note="${note}"]`);
+    if (key) key.classList.add('active-key');
+  }
   setTimeout(() => {
-    if (key) key.classList.remove('active-key');
-  }, 500);
+    document.querySelectorAll('.white-key, .black-key').forEach(key => key.classList.remove('active-key'));
+  }, duration);
 }
-
