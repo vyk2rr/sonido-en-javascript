@@ -17,6 +17,7 @@ body {
   transition: 0.2s;
 }
 
+
 .key:hover {
   background-color: #444;
 }
@@ -48,4 +49,13 @@ hr {
   text-align: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   transition: background 0.3s;
+}
+
+#progressionBox .key {
+  color: #222;
+  background: #fff;
+  border-color: #333;
+}
+#progressionBox .key:hover {
+  background: #eee;
 }
