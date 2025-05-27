@@ -34,3 +34,18 @@ hr {
   height: 1px;
   background-color: #555;
 }
+
+#poetryBox {
+  margin: 2em auto;
+  padding: 1.2em 2em;
+  max-width: 500px;
+  background: #f9f6f2;
+  border-left: 5px solid #e74c3c;
+  border-radius: 8px;
+  font-style: italic;
+  font-size: 1.2em;
+  color: #333;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: background 0.3s;
+}
