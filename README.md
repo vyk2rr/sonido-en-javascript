@@ -2,8 +2,7 @@
 
 Una interfaz web interactiva para explorar acordes, inversiones, armonías negativas y escalas musicales desde el navegador. Diseñado para artistas, músicos, creadores de experiencias inmersivas y curiosos del sonido.
 
-<img width="1185" alt="image" src="https://github.com/user-attachments/assets/54a8f19f-246f-4691-b707-9d944feafdaa" />
-
+<img width="641" alt="image" src="https://github.com/user-attachments/assets/cb67350b-fedc-4d9e-9d9a-763372779018" />
 
 ## 📦 Cómo usar
 
