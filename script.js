@@ -13,13 +13,28 @@ const scale = [
   { note: "B", freq: 493.88 }
 ];
 
+function getRootColorFromNote(note) {
+  // note es tipo "C", "D#", etc.
+  return rootColorMap[note[0]] || '#fff';
+}
+
 const container = document.getElementById("noteButtons");
 
 scale.forEach(({ note, freq }) => {
   const btn = document.createElement('div');
   btn.className = 'key';
   btn.textContent = note;
-  btn.onclick = () => playNote(freq, `Nota ${note} – Vibración: ${freq.toFixed(2)} Hz`);
+  btn.onclick = () => {
+    const noteButtonsDiv = document.getElementById('noteButtons');
+    const prevBg = noteButtonsDiv.style.background;
+    noteButtonsDiv.style.background = getRootColorFromNote(note);
+
+    playNote(freq, `Nota ${note} – Vibración: ${freq.toFixed(2)} Hz`);
+
+    setTimeout(() => {
+      noteButtonsDiv.style.background = prevBg;
+    }, 1000); // 1 segundo, igual que la duración de playNote
+  };
   container.appendChild(btn);
 });
 
