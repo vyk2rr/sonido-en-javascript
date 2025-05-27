@@ -155,6 +155,7 @@ function playNote(frequency, message) {
 
 function playChord(notes, message) {
   const now = audioCtx.currentTime;
+  showNotesOnStaff(notes);
   notes.forEach(note => {
     const freq = typeof note === 'string' ? noteToFrequency(note) : note;
     const oscillator = audioCtx.createOscillator();
@@ -181,6 +182,7 @@ function playChord(notes, message) {
     oscillator.start(now);
     oscillator.stop(now + duration);
   });
+  // setTimeout(clearStaff, 1000);
   document.getElementById('poetryBox').textContent = message || '—';
 }
 
@@ -415,4 +417,60 @@ function highlightPianoKey(note, duration = 1000) {
   setTimeout(() => {
     document.querySelectorAll('.white-key, .black-key').forEach(key => key.classList.remove('active-key'));
   }, duration);
+}
+
+function showNotesOnStaff(notes) {
+  const staff = document.querySelector('.staff-large');
+  staff.querySelectorAll('.notehead').forEach(n => n.remove());
+
+const noteSteps = {
+  'E4': 0,   // línea 5 (inferior)
+  'F4': 1,   // espacio
+  'G4': 2,   // línea 4
+  'A4': 3,   // espacio
+  'B4': 4,   // línea 3
+  'C5': 5,   // espacio
+  'D5': 6,   // línea 2
+  'E5': 7,   // espacio
+  'F5': 8    // línea 1 (superior)
+  // agrega más si quieres
+};
+  const baseLineTop = 208; // top de la línea 1 (superior)
+  const lineSpacing = 42; // px entre líneas
+
+  const baseLeft = 60;
+
+  notes.forEach(note => {
+    const step = noteSteps[note];
+    if (step !== undefined) {
+      const y = baseLineTop - (step * (lineSpacing / 2));
+      const noteDiv = document.createElement('div');
+      noteDiv.className = 'notehead';
+      noteDiv.style.position = 'absolute';
+      noteDiv.style.top = `${y}px`;
+      noteDiv.style.left = `${baseLeft}px`;
+      noteDiv.style.width = '24px';
+      noteDiv.style.height = '16px';
+      noteDiv.style.background = 'white';
+      noteDiv.style.border = '2px solid #222';
+      noteDiv.style.borderRadius = '50%';
+      noteDiv.style.transform = 'rotate(-20deg)';
+      noteDiv.style.zIndex = 10;
+
+      if (note.includes('#')) {
+        const sharp = document.createElement('span');
+        sharp.className = 'sharp';
+        sharp.textContent = '♯';
+        sharp.style.position = 'absolute';
+        sharp.style.left = '-14px';
+        sharp.style.top = '2px';
+        sharp.style.fontSize = '18px';
+        sharp.style.fontWeight = 'bold';
+        sharp.style.color = 'black';
+        sharp.style.fontFamily = 'serif';
+        noteDiv.appendChild(sharp);
+      }
+      staff.appendChild(noteDiv);
+    }
+  });
 }
