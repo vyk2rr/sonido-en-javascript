@@ -295,3 +295,53 @@ function playHymnOfJoyWithMelody() {
 
   document.getElementById('poetryBox').textContent = '🎶 Himno a la Alegría (Melodía + Armonía)';
 }
+
+const degreeMap = [
+  { name: "I",    chord: ['C4','E4','G4'] },
+  { name: "ii",   chord: ['D4','F4','A4'] },
+  { name: "iii",  chord: ['E4','G4','B4'] },
+  { name: "IV",   chord: ['F4','A4','C5'] },
+  { name: "V",    chord: ['G4','B4','D5'] },
+  { name: "vi",   chord: ['A4','C5','E5'] },
+  { name: "vii°", chord: ['B4','D5','F5'] }
+];
+
+let currentProgression = {
+  display: "I → V → I",
+  chords: [degreeMap[0].chord, degreeMap[4].chord, degreeMap[0].chord]
+};
+
+function randomProgression(length = 3) {
+  let indices = [];
+  while (indices.length < length) {
+    let idx = Math.floor(Math.random() * degreeMap.length);
+    // Evita repetir el mismo grado consecutivamente
+    if (indices.length === 0 || indices[indices.length - 1] !== idx) {
+      indices.push(idx);
+    }
+  }
+  return {
+    display: indices.map(i => degreeMap[i].name).join(" → "),
+    chords: indices.map(i => degreeMap[i].chord)
+  };
+}
+
+function playProgression() {
+  const prog = currentProgression.chords;
+  let i = 0;
+  function playNext() {
+    if (i < prog.length) {
+      playChord(prog[i]);
+      i++;
+      setTimeout(playNext, 900);
+    }
+  }
+  playNext();
+}
+
+function refreshProgression() {
+  // Puedes cambiar el 3 por otro número para progresiones más largas
+  currentProgression = randomProgression(3 + Math.floor(Math.random() * 2)); // 3 o 4 grados
+  document.getElementById('progressionDisplay').textContent = currentProgression.display;
+}
+

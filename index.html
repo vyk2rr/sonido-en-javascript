@@ -39,6 +39,15 @@
   <div class="key" onclick="playCScaleChords()">play C Major Scale (Acordes)</div>
   <div class="key" onclick="playDScaleChords()">play D Major Scale (Acordes)</div>
 
+  <div id="progressionBox" style="margin: 2em 0; padding: 1em; border: 1px solid #ccc;">
+    <h2>Ear trainer</h2>
+
+    <div id="progressionDisplay" style="font-size: 1.5em; margin-bottom: 1em;">I → V → I</div>
+    <button onclick="playProgression()">Reproducir secuencia</button>
+    <button onclick="refreshProgression()" style="margin-left:1em;">Refresh</button>
+  </div>
+
+
   <script src="./script.js"></script>
 </body>
 
