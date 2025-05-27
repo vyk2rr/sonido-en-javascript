@@ -4,7 +4,7 @@ disclaimer: Demo interactivo para explorar acordes y escalas usando JavaScript p
 
 Una interfaz web interactiva para explorar acordes, inversiones, armonías negativas y escalas musicales desde el navegador. Diseñado para artistas, músicos, creadores de experiencias inmersivas y curiosos del sonido.
 
-<img width="641" alt="image" src="https://github.com/user-attachments/assets/cb67350b-fedc-4d9e-9d9a-763372779018" />
+<img width="861" alt="image" src="https://github.com/user-attachments/assets/d9d8d698-05f7-4c48-bda4-d34f0679e34f" />
 
 ## 📦 Cómo usar
 
