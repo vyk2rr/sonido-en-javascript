@@ -250,15 +250,31 @@ let currentProgression = {
   chords: [degreeMap[0].chord, degreeMap[4].chord, degreeMap[0].chord]
 };
 
-function randomProgression(length = 3) {
+function randomProgression(length = 4) {
+  const tonicIndex = 0; // I
   let indices = [];
-  while (indices.length < length) {
+
+  // Decide aleatoriamente si la tónica va al inicio o al final
+  const tonicAtStart = Math.random() < 0.5;
+  if (tonicAtStart) {
+    indices.push(tonicIndex);
+  }
+
+  while (indices.length < length - (tonicAtStart ? 0 : 1)) {
     let idx = Math.floor(Math.random() * degreeMap.length);
-    // Evita repetir el mismo grado consecutivamente
-    if (indices.length === 0 || indices[indices.length - 1] !== idx) {
+    // Evita la tónica en medio y acordes consecutivos iguales
+    if (
+      idx !== tonicIndex &&
+      (indices.length === 0 || indices[indices.length - 1] !== idx)
+    ) {
       indices.push(idx);
     }
   }
+
+  if (!tonicAtStart) {
+    indices.push(tonicIndex);
+  }
+
   return {
     display: indices.map(i => degreeMap[i].name).join(" → "),
     chords: indices.map(i => degreeMap[i].chord)
