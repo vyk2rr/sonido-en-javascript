@@ -210,92 +210,6 @@ function playCScaleChords() {
   document.getElementById('poetryBox').textContent = 'Escala mayor de C en acordes CEG DFA EGB FAC GBD ACE BDF CEG';
 }
 
-function playHymnOfJoy() {
-  const sequence = [
-    { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C – acompaña E
-    { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
-    { notes: ['F4', 'A4', 'C5'], duration: 0.5 }, // F – acompaña F
-    { notes: ['G4', 'B4', 'D5'], duration: 0.5 }, // G – acompaña G
-
-    { notes: ['G4', 'B4', 'D5'], duration: 0.5 }, // G
-    { notes: ['F4', 'A4', 'C5'], duration: 0.5 }, // F
-    { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
-    { notes: ['D4', 'F4', 'A4'], duration: 0.5 }, // Dm
-
-    { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
-    { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
-    { notes: ['D4', 'F4', 'A4'], duration: 0.5 }, // Dm
-    { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
-
-    { notes: ['C4', 'E4', 'G4'], duration: 0.5 }, // C
-    { notes: ['D4', 'F4', 'A4'], duration: 0.5 }, // Dm
-  ];
-
-  playChordSequence(sequence);
-  document.getElementById('poetryBox').textContent = 'Himno a la Alegría – versión armónica simple';
-}
-
-function playHymnOfJoyWithMelody() {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  let currentTime = audioCtx.currentTime;
-
-  const melody = [
-    'E5', 'E5', 'F5', 'G5',  // E E F G
-    'G5', 'F5', 'E5', 'D5',  // G F E D
-    'C5', 'C5', 'D5', 'E5',  // C C D E
-    'E5', 'D5', 'D5'         // E D D
-  ];
-
-  const chords = [
-    ['C4', 'E4', 'G4'],
-    ['C4', 'E4', 'G4'],
-    ['F4', 'A4', 'C5'],
-    ['G4', 'B4', 'D5'],
-
-    ['G4', 'B4', 'D5'],
-    ['F4', 'A4', 'C5'],
-    ['C4', 'E4', 'G4'],
-    ['D4', 'F4', 'A4'],
-
-    ['C4', 'E4', 'G4'],
-    ['C4', 'E4', 'G4'],
-    ['D4', 'F4', 'A4'],
-    ['C4', 'E4', 'G4'],
-
-    ['C4', 'E4', 'G4'],
-    ['D4', 'F4', 'A4'],
-  ];
-
-  // Recorrer melodía y acordes al mismo tiempo
-  for (let i = 0; i < melody.length; i++) {
-    const noteFreq = noteToFrequency(melody[i]);
-
-    const melodyOsc = audioCtx.createOscillator();
-    melodyOsc.type = 'sine';
-    melodyOsc.frequency.setValueAtTime(noteFreq, currentTime);
-    melodyOsc.connect(audioCtx.destination);
-    melodyOsc.start(currentTime);
-    melodyOsc.stop(currentTime + 0.45);
-
-    // reproducir acorde si existe (evita error en mismatch)
-    if (chords[i]) {
-      chords[i].forEach(note => {
-        const chordFreq = noteToFrequency(note);
-        const osc = audioCtx.createOscillator();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(chordFreq, currentTime);
-        osc.connect(audioCtx.destination);
-        osc.start(currentTime);
-        osc.stop(currentTime + 0.45);
-      });
-    }
-
-    currentTime += 0.5;
-  }
-
-  document.getElementById('poetryBox').textContent = '🎶 Himno a la Alegría (Melodía + Armonía)';
-}
-
 const degreeMap = [
   { name: "I",    chord: ['C4','E4','G4'] },
   { name: "ii",   chord: ['D4','F4','A4'] },
@@ -326,14 +240,36 @@ function randomProgression(length = 3) {
   };
 }
 
+// Mapeo de nota raíz a color
+const rootColorMap = {
+  'C': '#e74c3c',     // rojo
+  'D': '#e67e22',     // naranja
+  'E': '#f1c40f',     // amarillo
+  'F': '#2ecc71',     // verde
+  'G': '#3498db',     // azul
+  'A': '#1a237e',     // azul oscuro
+  'B': '#9b59b6'      // morado
+};
+
+function getRootColor(chord) {
+  // chord es un array como ['C4','E4','G4']
+  const root = chord[0][0]; // Primera letra de la nota raíz
+  return rootColorMap[root] || '#fff';
+}
+
 function playProgression() {
   const prog = currentProgression.chords;
   let i = 0;
   function playNext() {
     if (i < prog.length) {
+      // Cambia el color de fondo según la nota raíz
+      document.getElementById('progressionBox').style.background = getRootColor(prog[i]);
       playChord(prog[i]);
       i++;
       setTimeout(playNext, 900);
+    } else {
+      // Restablece el fondo al terminar
+      document.getElementById('progressionBox').style.background = '';
     }
   }
   playNext();
