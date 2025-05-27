@@ -201,14 +201,44 @@ function playChordSequence(sequence) {
 function playDScaleNotes() {
   const notes = ['D4', 'E4', 'F#4', 'G4', 'A4', 'B4', 'C#5', 'D5'];
   const sequence = notes.map(note => ({ notes: [note], duration: 0.5 }));
-  playChordSequence(sequence);
+
+  let i = 0;
+  function playNextNote() {
+    if (i < sequence.length) {
+      playChord(sequence[i].notes);
+      highlightPianoKey(sequence[i].notes[0], sequence[i].duration * 1000 + 100);
+      i++;
+      setTimeout(playNextNote, sequence[i - 1].duration * 1000 + 100);
+    } else {
+      setTimeout(() => {
+        document.querySelectorAll('.white-key, .black-key').forEach(key => key.classList.remove('active-key'));
+      }, 600);
+    }
+  }
+  playNextNote();
+
   document.getElementById('poetryBox').textContent = 'Escala mayor de D en notas D Em F#m G A Bm C#dim D';
 }
 
 function playCScaleNotes() {
   const notes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
   const sequence = notes.map(note => ({ notes: [note], duration: 0.5 }));
-  playChordSequence(sequence);
+
+  let i = 0;
+  function playNextNote() {
+    if (i < sequence.length) {
+      playChord(sequence[i].notes);
+      highlightPianoKey(sequence[i].notes[0], sequence[i].duration * 1000 + 100);
+      i++;
+      setTimeout(playNextNote, sequence[i - 1].duration * 1000 + 100);
+    } else {
+      setTimeout(() => {
+        document.querySelectorAll('.white-key, .black-key').forEach(key => key.classList.remove('active-key'));
+      }, 600);
+    }
+  }
+  playNextNote();
+
   document.getElementById('poetryBox').textContent = 'Escala mayor de C en notas C Dm Em F G Am Bdim C';
 }
 
