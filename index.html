@@ -85,6 +85,16 @@
   </div>
 </div>
 
+<div class="staff-large">
+  <!-- líneas del pentagrama -->
+  <div class="line"></div>
+  <div class="line"></div>
+  <div class="line"></div>
+  <div class="line"></div>
+  <div class="line"></div>
+</div>
+
+
   <script src="./script.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -112,6 +122,57 @@
       });
     });
   </script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+  const staff = document.querySelector('.staff-large');
+
+  const notePositions = {
+    'E4': 208, // línea 5 (inferior)
+    'F4': 187, // espacio
+    'G4': 166, // línea 4
+    'A4': 145, // espacio
+    'B4': 124, // línea 3
+    'C5': 103, // espacio
+    'D5': 82,  // línea 2
+    'E5': 61,  // espacio
+    'F5': 40   // línea 1 (superior)
+    // agrega más si quieres
+  };
+
+  // Escuchar clics en teclas
+document.querySelectorAll('.white-key, .black-key').forEach(key => {
+  key.addEventListener('click', () => {
+    const note = key.getAttribute('data-note');
+    const y = notePositions[note];
+    const staff = document.querySelector('.staff-large');
+    staff.querySelectorAll('.notehead').forEach(n => n.remove());
+    if (y !== undefined) {
+      const noteDiv = document.createElement('div');
+      noteDiv.classList.add('notehead');
+      noteDiv.style.top = `${y}px`;
+      noteDiv.style.left = '60px';
+      noteDiv.style.position = 'absolute';
+      noteDiv.style.width = '24px';
+      noteDiv.style.height = '16px';
+      noteDiv.style.background = 'white';
+      noteDiv.style.border = '2px solid #222';
+      noteDiv.style.borderRadius = '50%';
+      noteDiv.style.transform = 'rotate(-20deg)';
+      noteDiv.style.zIndex = 10;
+      if (note.includes('#')) {
+        const sharp = document.createElement('span');
+        sharp.className = 'sharp';
+        sharp.textContent = '♯';
+        noteDiv.appendChild(sharp);
+      }
+      staff.appendChild(noteDiv);
+    }
+  });
+});
+
+  });
+</script>
 
   
 </body>
