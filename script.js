@@ -16,6 +16,8 @@ const scale = [
   { note: "B", freq: 493.88 }
 ];
 
+window.scale = scale;
+
 const degreeMap = [
   { name: "I",    chord: ['C4','E4','G4'] },
   { name: "ii",   chord: ['D4','F4','A4'] },
@@ -290,5 +292,17 @@ function playProgression() {
 function refreshProgression() {
   currentProgression = randomProgression(3 + Math.floor(Math.random() * 2)); // 3 o 4 grados
   document.getElementById('progressionDisplay').textContent = currentProgression.display;
+}
+
+function highlightPianoKey(note) {
+  // Quita la clase activa de todas las teclas
+  document.querySelectorAll('.white-key, .black-key').forEach(key => key.classList.remove('active-key'));
+  // Busca la tecla correspondiente y la resalta
+  const key = document.querySelector(`[data-note="${note}"]`);
+  if (key) key.classList.add('active-key');
+  // Quita el highlight después de un tiempo
+  setTimeout(() => {
+    if (key) key.classList.remove('active-key');
+  }, 500);
 }
 
