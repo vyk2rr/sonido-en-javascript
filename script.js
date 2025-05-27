@@ -19,6 +19,8 @@ function getRootColorFromNote(note) {
 }
 
 const container = document.getElementById("noteButtons");
+let originalNoteButtonsBg = null;
+let noteBgClickId = 0; // contador global
 
 scale.forEach(({ note, freq }) => {
   const btn = document.createElement('div');
@@ -26,14 +28,22 @@ scale.forEach(({ note, freq }) => {
   btn.textContent = note;
   btn.onclick = () => {
     const noteButtonsDiv = document.getElementById('noteButtons');
-    const prevBg = noteButtonsDiv.style.background;
+    if (originalNoteButtonsBg === null) {
+      originalNoteButtonsBg = noteButtonsDiv.style.background;
+    }
+    noteBgClickId++; // incrementa el identificador
+    const thisClickId = noteBgClickId;
+
     noteButtonsDiv.style.background = getRootColorFromNote(note);
 
     playNote(freq, `Nota ${note} – Vibración: ${freq.toFixed(2)} Hz`);
 
     setTimeout(() => {
-      noteButtonsDiv.style.background = prevBg;
-    }, 1000); // 1 segundo, igual que la duración de playNote
+      // Solo el último clic puede restaurar el color
+      if (noteBgClickId === thisClickId) {
+        noteButtonsDiv.style.background = originalNoteButtonsBg;
+      }
+    }, 1000);
   };
   container.appendChild(btn);
 });
