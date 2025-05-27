@@ -47,6 +47,7 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 // UTILIDADES
 // =====================
 function getRootColorFromNote(note) {
+  // note es un string como 'C4', 'D#5', etc.
   return rootColorMap[note[0]] || '#fff';
 }
 
