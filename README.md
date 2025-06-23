@@ -13,7 +13,7 @@ Una interfaz web interactiva para explorar acordes, inversiones, armonías negat
 
 # 🧱 Extensible
 
-Este proyecto está pensado para escalarse. Próximos pasos posibles:
+Este proyecto es una prueba, pero se pueden hacer muchas cosas más: 
 
 - Añadir secuenciador visual
 - Cambiar tipos de onda (seno, sierra, cuadrada)
