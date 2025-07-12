@@ -99,3 +99,47 @@ hr {
     background: #ffe082 !important;
     box-shadow: 0 0 10px #ffd54f;
   }
+
+
+
+.staff-large {
+  position: relative;
+  height: 300px; 
+  margin: 2em auto;
+  width: 320px;
+  background: transparent;
+}
+
+.staff-large .line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+}
+.staff-large .line:nth-child(1) { top: 40px; }
+.staff-large .line:nth-child(2) { top: 82px; }
+.staff-large .line:nth-child(3) { top: 124px; }
+.staff-large .line:nth-child(4) { top: 166px; }
+.staff-large .line:nth-child(5) { top: 208px; }
+
+.sharp {
+  position: absolute;
+  left: -14px;
+  top: 2px; 
+  font-size: 18px;
+  font-weight: bold;
+  color: red;
+  font-family: serif;
+}
+
+.notehead {
+  position: absolute;
+  width: 24px;
+  height: 16px;
+  background: white;
+  border: 2px solid #222;
+  border-radius: 50%;
+  transform: rotate(-20deg);
+  z-index: 10;
+}
